@@ -1,11 +1,8 @@
-import streamlit as st
-import tensorflow as tf
-import numpy as np
-from PIL import Image
-import gdown
 import os
+import gdown
+import tensorflow as tf
+import streamlit as st
 
-# Function to download the model from Google Drive
 @st.cache_resource()
 def load_model():
     model_path = 'human_detection_model_dataset.h5'
@@ -13,41 +10,22 @@ def load_model():
     # Check if the model file already exists
     if not os.path.exists(model_path):
         # Replace 'your_model_id' with the actual file ID from Google Drive
-        url = 'https://drive.google.com/file/d/1-4DeYBQeBDhpQcDaOiRUGqYKFqjGJdKl/view?usp=sharing'  # Update with your Google Drive file ID
+        url = 'https://drive.google.com/uc?id=1abcd12345efghijklmnop'  # Update with your Google Drive file ID
         gdown.download(url, model_path, quiet=False)
     
-    # Load the model after downloading
-    model = tf.keras.models.load_model(model_path)
-    return model
-
-# Load the model
-model = load_model()
-
-# Function to preprocess the input image
-def preprocess_image(img, target_size=(128, 128)):
-    img = img.resize(target_size)  # Resize the image
-    img_array = np.array(img)  # Convert to numpy array
-    img_array = np.expand_dims(img_array, axis=0)  # Expand dimensions for batch processing
-    img_array = img_array / 255.0  # Normalize the image
-    return img_array
-
-# Streamlit app code
-st.title("Human Detection Application")
-st.write("Upload an image to check if it contains a human.")
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
-
-if uploaded_file is not None:
-    img = Image.open(uploaded_file)
-    st.image(img, caption='Uploaded Image', use_column_width=True)
-    
-    if model is not None:
-        img_array = preprocess_image(img)
-        prediction = model.predict(img_array)
-        
-        # Adjust the threshold here if needed
-        if prediction[0] > 0.5:
-            st.write("Prediction: Human Detected")
-        else:
-            st.write("Prediction: No Human Detected")
+    # Check if the file was downloaded successfully
+    if os.path.exists(model_path):
+        st.write("Model downloaded successfully.")
     else:
-        st.write("Model not available.")
+        st.error("Failed to download the model.")
+        return None
+
+    # Load the model after downloading
+    try:
+        model = tf.keras.models.load_model(model_path)
+        st.write("Model loaded successfully.")
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        return None
+    
+    return model
