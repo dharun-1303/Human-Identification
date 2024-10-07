@@ -2,25 +2,17 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-import gdown
-import os
 
-# Function to download model from Google Drive
+# Load the trained model
 @st.cache(allow_output_mutation=True)
 def load_model():
-    model_path = 'human_detection_model_dataset.h5'
-    
-    # Check if the model file already exists
-    if not os.path.exists(model_path):
-        # Replace 'your_model_id' with the actual file ID from Google Drive
-        url = 'https://drive.google.com/file/d/1-4DeYBQeBDhpQcDaOiRUGqYKFqjGJdKl/view?usp=drive_link'
-        gdown.download(url, model_path, quiet=False)
-    
-    # Load the model after downloading
-    model = tf.keras.models.load_model(model_path)
-    return model
+    try:
+        model = tf.keras.models.load_model('/content/drive/MyDrive/datasets/human_detection_model_dataset.h5')  # Update to your correct path
+        return model
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        return None
 
-# Call the load_model function to load the model
 model = load_model()
 
 # Function to preprocess the input image
