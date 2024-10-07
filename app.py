@@ -4,6 +4,10 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 
+
+# Rest of the code
+
+
 # Load the trained model
 model = tf.keras.models.load_model('/content/drive/MyDrive/datasets/human_detection_model_dataset.h5')
 
